@@ -305,22 +305,15 @@ func (m *mieruNode) handleConn(conn net.Conn) {
 		log.WithField("tag", m.tag).Debug("mieru connection has no user context")
 		return
 	}
-	uuid := userCtx.UserName()
-	if uuid == "" {
-		log.WithField("tag", m.tag).Debug("mieru connection has empty user name")
-		return
-	}
 
-	bucket, reject := m.checkLimit(uuid, conn.RemoteAddr())
+	// mieru's Session.UserName() is populated lazily — only after the first
+	// data segment is processed and the cipher block's user context has
+	// been resolved. Reading it before any client data arrives always
+	// returns "". So we must perform the socks5 handshake FIRST (which
+	// drains the first segment) and only then ask for the user name.
 	metered := &meteredConn{
 		Conn:    conn,
-		user:    uuid,
 		traffic: m.traffic,
-		limiter: bucket,
-	}
-	if reject {
-		_ = writeSocks5Reply(metered, constant.Socks5ReplyNotAllowedByRuleSet, nil)
-		return
 	}
 
 	if err := metered.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
@@ -331,6 +324,20 @@ func (m *mieruNode) handleConn(conn net.Conn) {
 	_ = metered.SetReadDeadline(time.Time{})
 	if err != nil {
 		log.WithFields(log.Fields{"tag": m.tag, "err": err}).Debug("read mieru socks request failed")
+		return
+	}
+
+	uuid := userCtx.UserName()
+	if uuid == "" {
+		log.WithField("tag", m.tag).Debug("mieru connection has empty user name after handshake")
+		return
+	}
+
+	bucket, reject := m.checkLimit(uuid, conn.RemoteAddr())
+	metered.user = uuid
+	metered.limiter = bucket
+	if reject {
+		_ = writeSocks5Reply(metered, constant.Socks5ReplyNotAllowedByRuleSet, nil)
 		return
 	}
 
@@ -442,20 +449,43 @@ func writeSocks5Reply(conn net.Conn, reply byte, bind *net.TCPAddr) error {
 	return resp.WriteToSocks5(conn)
 }
 
+// closeWriter is the half-close interface (TCP shutdown(SHUT_WR), mieru Session,
+// etc). Calling Close on a still-active connection terminates BOTH directions,
+// which kills long uploads/downloads like speedtest mid-flight. Half-close
+// instead signals "I'm done sending" and lets the peer keep streaming back.
+type closeWriter interface {
+	CloseWrite() error
+}
+
+func halfCloseWrite(conn net.Conn) {
+	if cw, ok := conn.(closeWriter); ok {
+		_ = cw.CloseWrite()
+		return
+	}
+	// Connections without CloseWrite (e.g., mieru Session) have no half-close
+	// primitive. SetWriteDeadline alone is wrong — it only stops US from
+	// writing, but leaves the other goroutine blocked reading from `conn`
+	// forever. Fall back to a full Close so the other side unblocks.
+	_ = conn.Close()
+}
+
 func bidiCopy(conn1, conn2 net.Conn) error {
 	errCh := make(chan error, 2)
 	go func() {
 		_, err := io.Copy(conn1, conn2)
-		conn1.Close()
+		halfCloseWrite(conn1)
 		errCh <- err
 	}()
 	go func() {
 		_, err := io.Copy(conn2, conn1)
-		conn2.Close()
+		halfCloseWrite(conn2)
 		errCh <- err
 	}()
 	err := <-errCh
 	<-errCh
+	// Only after both directions have drained do we fully tear down.
+	_ = conn1.Close()
+	_ = conn2.Close()
 	return err
 }
 
