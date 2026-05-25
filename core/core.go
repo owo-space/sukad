@@ -3,11 +3,11 @@ package core
 import (
 	"sync"
 
+	panel "github.com/missuo/sukad/api/sukashi"
+	"github.com/missuo/sukad/conf"
+	"github.com/missuo/sukad/core/app/dispatcher"
+	_ "github.com/missuo/sukad/core/distro/all"
 	log "github.com/sirupsen/logrus"
-	panel "github.com/wyx2685/v2node/api/v2board"
-	"github.com/wyx2685/v2node/conf"
-	"github.com/wyx2685/v2node/core/app/dispatcher"
-	_ "github.com/wyx2685/v2node/core/distro/all"
 	"github.com/xtls/xray-core/app/proxyman"
 	"github.com/xtls/xray-core/app/stats"
 	"github.com/xtls/xray-core/common/serial"
@@ -25,12 +25,13 @@ type AddUsersParams struct {
 	*panel.NodeInfo
 }
 
-type V2Core struct {
+type Core struct {
 	Config     *conf.Conf
 	ReloadCh   chan struct{}
 	access     sync.Mutex
 	Server     *core.Instance
 	users      *UserMap
+	mieruNodes map[string]*mieruNode
 	ihm        inbound.Manager
 	ohm        outbound.Manager
 	dispatcher *dispatcher.DefaultDispatcher
@@ -41,9 +42,10 @@ type UserMap struct {
 	mapLock sync.RWMutex
 }
 
-func New(config *conf.Conf) *V2Core {
-	core := &V2Core{
-		Config: config,
+func New(config *conf.Conf) *Core {
+	core := &Core{
+		mieruNodes: make(map[string]*mieruNode),
+		Config:     config,
 		users: &UserMap{
 			uidMap: make(map[string]int),
 		},
@@ -51,7 +53,7 @@ func New(config *conf.Conf) *V2Core {
 	return core
 }
 
-func (v *V2Core) Start(infos []*panel.NodeInfo) error {
+func (v *Core) Start(infos []*panel.NodeInfo) error {
 	v.access.Lock()
 	defer v.access.Unlock()
 	v.Server = getCore(v.Config, infos)
@@ -64,16 +66,24 @@ func (v *V2Core) Start(infos []*panel.NodeInfo) error {
 	return nil
 }
 
-func (v *V2Core) Close() error {
+func (v *Core) Close() error {
 	v.access.Lock()
 	defer v.access.Unlock()
 	v.Config = nil
 	v.ihm = nil
 	v.ohm = nil
 	v.dispatcher = nil
-	err := v.Server.Close()
-	if err != nil {
-		return err
+	for tag, node := range v.mieruNodes {
+		if err := node.close(); err != nil {
+			return err
+		}
+		delete(v.mieruNodes, tag)
+	}
+	if v.Server != nil {
+		err := v.Server.Close()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

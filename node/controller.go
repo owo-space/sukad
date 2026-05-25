@@ -5,16 +5,16 @@ import (
 	"errors"
 	"fmt"
 
+	panel "github.com/missuo/sukad/api/sukashi"
+	"github.com/missuo/sukad/common/task"
+	"github.com/missuo/sukad/conf"
+	"github.com/missuo/sukad/core"
+	"github.com/missuo/sukad/limiter"
 	log "github.com/sirupsen/logrus"
-	panel "github.com/wyx2685/v2node/api/v2board"
-	"github.com/wyx2685/v2node/common/task"
-	"github.com/wyx2685/v2node/conf"
-	"github.com/wyx2685/v2node/core"
-	"github.com/wyx2685/v2node/limiter"
 )
 
 type Controller struct {
-	server                  *core.V2Core
+	server                  *core.Core
 	apiClient               *panel.Client
 	tag                     string
 	limiter                 *limiter.Limiter
@@ -38,7 +38,7 @@ func NewController(api *panel.Client, conf *conf.NodeConfig, info *panel.NodeInf
 }
 
 // Start implement the Start() function of the service interface
-func (c *Controller) Start(x *core.V2Core) error {
+func (c *Controller) Start(x *core.Core) error {
 	// Init Core
 	c.server = x
 	var err error

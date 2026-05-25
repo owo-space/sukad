@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	panel "github.com/wyx2685/v2node/api/v2board"
-	"github.com/wyx2685/v2node/common/counter"
-	"github.com/wyx2685/v2node/common/format"
-	"github.com/wyx2685/v2node/core/app/dispatcher"
+	panel "github.com/missuo/sukad/api/sukashi"
+	"github.com/missuo/sukad/common/counter"
+	"github.com/missuo/sukad/common/format"
+	"github.com/missuo/sukad/core/app/dispatcher"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/serial"
 	"github.com/xtls/xray-core/infra/conf"
@@ -24,7 +24,7 @@ import (
 	"github.com/xtls/xray-core/proxy/vless"
 )
 
-func (v *V2Core) GetUserManager(tag string) (proxy.UserManager, error) {
+func (v *Core) GetUserManager(tag string) (proxy.UserManager, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	handler, err := v.ihm.GetHandler(ctx, tag)
@@ -42,7 +42,13 @@ func (v *V2Core) GetUserManager(tag string) (proxy.UserManager, error) {
 	return userManager, nil
 }
 
-func (vc *V2Core) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo) error {
+func (vc *Core) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo) error {
+	vc.access.Lock()
+	if node, ok := vc.mieruNodes[tag]; ok {
+		vc.access.Unlock()
+		return node.delUsers(users)
+	}
+	vc.access.Unlock()
 	userManager, err := vc.GetUserManager(tag)
 	if err != nil {
 		return fmt.Errorf("get user manager error: %s", err)
@@ -72,7 +78,17 @@ func (vc *V2Core) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo
 	return nil
 }
 
-func (vc *V2Core) GetUserTrafficSlice(tag string, mintraffic int) ([]panel.UserTraffic, error) {
+func (vc *Core) GetUserTrafficSlice(tag string, mintraffic int) ([]panel.UserTraffic, error) {
+	vc.access.Lock()
+	if node, ok := vc.mieruNodes[tag]; ok {
+		vc.access.Unlock()
+		trafficSlice := node.getUserTrafficSlice(mintraffic)
+		if len(trafficSlice) == 0 {
+			return nil, nil
+		}
+		return trafficSlice, nil
+	}
+	vc.access.Unlock()
 	trafficSlice := make([]panel.UserTraffic, 0)
 	vc.users.mapLock.RLock()
 	defer vc.users.mapLock.RUnlock()
@@ -106,7 +122,13 @@ func (vc *V2Core) GetUserTrafficSlice(tag string, mintraffic int) ([]panel.UserT
 	return nil, nil
 }
 
-func (v *V2Core) AddUsers(p *AddUsersParams) (added int, err error) {
+func (v *Core) AddUsers(p *AddUsersParams) (added int, err error) {
+	v.access.Lock()
+	if node, ok := v.mieruNodes[p.Tag]; ok {
+		v.access.Unlock()
+		return node.addUsers(p.Users)
+	}
+	v.access.Unlock()
 	v.users.mapLock.Lock()
 	defer v.users.mapLock.Unlock()
 	for i := range p.Users {

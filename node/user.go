@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
+	panel "github.com/missuo/sukad/api/sukashi"
 	log "github.com/sirupsen/logrus"
-	panel "github.com/wyx2685/v2node/api/v2board"
 )
 
 func (c *Controller) reportUserTrafficTask(ctx context.Context) (err error) {

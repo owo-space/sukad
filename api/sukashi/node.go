@@ -1,4 +1,4 @@
-package panel
+package sukashi
 
 import (
 	"context"
@@ -55,12 +55,28 @@ type CommonNode struct {
 	ZeroRTTHandshake  bool   `json:"zero_rtt_handshake"`
 	//anytls
 	PaddingScheme []string `json:"padding_scheme,omitempty"`
+	//mieru
+	MieruSettings MieruSettings `json:"mieru_settings"`
 	//hysteria hysteria2
 	UpMbps                  int    `json:"up_mbps"`
 	DownMbps                int    `json:"down_mbps"`
 	Obfs                    string `json:"obfs"`
 	ObfsPassword            string `json:"obfs_password"`
 	Ignore_Client_Bandwidth bool   `json:"ignore_client_bandwidth"`
+}
+
+type MieruSettings struct {
+	PortBindings        []MieruPortBinding `json:"port_bindings"`
+	MTU                 int                `json:"mtu"`
+	UserHintIsMandatory bool               `json:"user_hint_is_mandatory"`
+	TrafficPattern      json.RawMessage    `json:"traffic_pattern"`
+}
+
+type MieruPortBinding struct {
+	Port         int    `json:"port"`
+	PortRange    string `json:"port_range"`
+	PortRangeAlt string `json:"portRange"`
+	Protocol     string `json:"protocol"`
 }
 
 type Route struct {
@@ -161,7 +177,7 @@ func (c *Client) GetNodeInfo(ctx context.Context) (node *NodeInfo, err error) {
 	case "vmess", "trojan", "hysteria2", "tuic", "anytls", "vless":
 		node.Type = cm.Protocol
 		node.Security = cm.Tls
-	case "shadowsocks":
+	case "shadowsocks", "mieru":
 		node.Type = cm.Protocol
 		node.Security = 0
 	default:
@@ -171,16 +187,16 @@ func (c *Client) GetNodeInfo(ctx context.Context) (node *NodeInfo, err error) {
 	cf := cm.TlsSettings.CertFile
 	kf := cm.TlsSettings.KeyFile
 	if cf == "" {
-		cf = filepath.Join("/etc/v2node/", cm.Protocol+strconv.Itoa(c.NodeId)+".cer")
+		cf = filepath.Join("/etc/sukad/", cm.Protocol+strconv.Itoa(c.NodeId)+".cer")
 	}
 	if kf == "" {
-		kf = filepath.Join("/etc/v2node/", cm.Protocol+strconv.Itoa(c.NodeId)+".key")
+		kf = filepath.Join("/etc/sukad/", cm.Protocol+strconv.Itoa(c.NodeId)+".key")
 	}
 	cm.CertInfo = &CertInfo{
 		CertMode:         cm.TlsSettings.CertMode,
 		CertFile:         cf,
 		KeyFile:          kf,
-		Email:            "node@v2board.com",
+		Email:            "node@sukashi.com",
 		CertDomain:       cm.TlsSettings.PrimaryServerName(),
 		DNSEnv:           make(map[string]string),
 		Provider:         cm.TlsSettings.Provider,

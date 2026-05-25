@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	panel "github.com/wyx2685/v2node/api/v2board"
+	panel "github.com/missuo/sukad/api/sukashi"
 	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/features/inbound"
@@ -24,13 +24,13 @@ type NetworkSettingsProxyProtocol struct {
 	AcceptProxyProtocol bool `json:"acceptProxyProtocol"`
 }
 
-func (v *V2Core) removeInbound(tag string) error {
+func (v *Core) removeInbound(tag string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	return v.ihm.RemoveHandler(ctx, tag)
 }
 
-func (v *V2Core) addInbound(config *core.InboundHandlerConfig) error {
+func (v *Core) addInbound(config *core.InboundHandlerConfig) error {
 	rawHandler, err := core.CreateObject(v.Server, config)
 	if err != nil {
 		return err

@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	panel "github.com/missuo/sukad/api/sukashi"
+	"github.com/missuo/sukad/conf"
+	"github.com/missuo/sukad/core"
 	log "github.com/sirupsen/logrus"
-	panel "github.com/wyx2685/v2node/api/v2board"
-	"github.com/wyx2685/v2node/conf"
-	"github.com/wyx2685/v2node/core"
 )
 
 type Node struct {
@@ -35,7 +35,7 @@ func New(nodes []conf.NodeConfig) (*Node, error) {
 	return n, nil
 }
 
-func (n *Node) Start(nodes []conf.NodeConfig, core *core.V2Core) error {
+func (n *Node) Start(nodes []conf.NodeConfig, core *core.Core) error {
 	for i, node := range nodes {
 		err := n.controllers[i].Start(core)
 		if err != nil {

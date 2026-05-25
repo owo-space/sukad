@@ -1,4 +1,4 @@
-package panel
+package sukashi
 
 import (
 	"context"
@@ -32,7 +32,7 @@ type AliveMap struct {
 	Alive map[int]int `json:"alive"`
 }
 
-// GetUserList will pull user from v2board
+// GetUserList will pull user from sukashi
 func (c *Client) GetUserList(ctx context.Context) ([]UserInfo, error) {
 	const path = "/api/v1/server/UniProxy/user"
 	r, err := c.client.R().

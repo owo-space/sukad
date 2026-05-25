@@ -9,12 +9,12 @@ import (
 	"runtime"
 	"syscall"
 
+	"github.com/missuo/sukad/conf"
+	"github.com/missuo/sukad/core"
+	"github.com/missuo/sukad/limiter"
+	"github.com/missuo/sukad/node"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/wyx2685/v2node/conf"
-	"github.com/wyx2685/v2node/core"
-	"github.com/wyx2685/v2node/limiter"
-	"github.com/wyx2685/v2node/node"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 
 var serverCommand = cobra.Command{
 	Use:   "server",
-	Short: "Run v2node server",
+	Short: "Run sukad server",
 	Run:   serverHandle,
 	Args:  cobra.NoArgs,
 }
@@ -32,7 +32,7 @@ var serverCommand = cobra.Command{
 func init() {
 	serverCommand.PersistentFlags().
 		StringVarP(&config, "config", "c",
-			"/etc/v2node/config.json", "config file path")
+			"/etc/sukad/config.json", "config file path")
 	serverCommand.PersistentFlags().
 		BoolVarP(&watch, "watch", "w",
 			true, "watch file path change")
@@ -89,16 +89,16 @@ func serverHandle(_ *cobra.Command, _ []string) {
 	log.Info("Got nodes info from server")
 	//core
 	var reloadCh = make(chan struct{}, 1)
-	v2core := core.New(c)
-	v2core.ReloadCh = reloadCh
-	err = v2core.Start(nodes.NodeInfos)
+	sukadCore := core.New(c)
+	sukadCore.ReloadCh = reloadCh
+	err = sukadCore.Start(nodes.NodeInfos)
 	if err != nil {
 		log.WithField("err", err).Error("Start core failed")
 		return
 	}
-	defer v2core.Close()
+	defer sukadCore.Close()
 	//node
-	err = nodes.Start(c.NodeConfigs, v2core)
+	err = nodes.Start(c.NodeConfigs, sukadCore)
 	if err != nil {
 		log.WithField("err", err).Error("Run nodes failed")
 		return
@@ -130,7 +130,7 @@ func serverHandle(_ *cobra.Command, _ []string) {
 			os.Exit(0)
 		case <-reloadCh:
 			log.Info("收到重启信号，正在重新加载配置...")
-			if err := reload(config, &nodes, &v2core); err != nil {
+			if err := reload(config, &nodes, &sukadCore); err != nil {
 				log.WithField("err", err).Panic("重启失败")
 			}
 			log.Info("重启成功")
@@ -138,18 +138,18 @@ func serverHandle(_ *cobra.Command, _ []string) {
 	}
 }
 
-func reload(config string, nodes **node.Node, v2core **core.V2Core) error {
+func reload(config string, nodes **node.Node, sukadCore **core.Core) error {
 	// Preserve old reload channel so new core continues to receive signals
 	var oldReloadCh chan struct{}
-	if *v2core != nil {
-		oldReloadCh = (*v2core).ReloadCh
+	if *sukadCore != nil {
+		oldReloadCh = (*sukadCore).ReloadCh
 	}
 
 	if err := (*nodes).Close(); err != nil {
 		return err
 	}
 
-	if err := (*v2core).Close(); err != nil {
+	if err := (*sukadCore).Close(); err != nil {
 		return err
 	}
 
@@ -198,7 +198,7 @@ func reload(config string, nodes **node.Node, v2core **core.V2Core) error {
 	}
 
 	*nodes = newNodes
-	*v2core = newCore
+	*sukadCore = newCore
 
 	runtime.GC()
 	return nil
