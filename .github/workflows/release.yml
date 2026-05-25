@@ -20,6 +20,10 @@ on:
       - "go.sum"
       - ".github/workflows/release.yml"
 
+permissions:
+  contents: write  # required for svenstaro/upload-release-action to create
+                   # the release and attach assets when a tag is pushed.
+
 jobs:
   build:
     name: ${{ matrix.goos }}/${{ matrix.goarch }}${{ matrix.goarm }}
