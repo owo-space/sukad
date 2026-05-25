@@ -1,4 +1,4 @@
-module github.com/missuo/sukad
+module github.com/owo-space/sukad
 
 go 1.26.1
 

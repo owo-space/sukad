@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sukad.core.app.dispatcher;
 option csharp_namespace = "Sukad.core.app.dispatcher";
-option go_package = "github.com/missuo/sukad/core/app/dispatcher";
+option go_package = "github.com/owo-space/sukad/core/app/dispatcher";
 option java_package = "com.sukad.core.app.dispatcher";
 option java_multiple_files = true;
 

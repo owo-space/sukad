@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/missuo/sukad/common/file"
+	"github.com/owo-space/sukad/common/file"
 	log "github.com/sirupsen/logrus"
 )
 

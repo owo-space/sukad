@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 
-	panel "github.com/missuo/sukad/api/sukashi"
+	panel "github.com/owo-space/sukad/api/sukashi"
 )
 
 func (v *Core) AddNode(tag string, info *panel.NodeInfo) error {

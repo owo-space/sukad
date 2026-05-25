@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	panel "github.com/missuo/sukad/api/sukashi"
-	"github.com/missuo/sukad/common/format"
-	"github.com/missuo/sukad/common/rate"
+	panel "github.com/owo-space/sukad/api/sukashi"
+	"github.com/owo-space/sukad/common/format"
+	"github.com/owo-space/sukad/common/rate"
 )
 
 var limitLock sync.RWMutex

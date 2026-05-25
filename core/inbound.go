@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	panel "github.com/missuo/sukad/api/sukashi"
+	panel "github.com/owo-space/sukad/api/sukashi"
 	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/features/inbound"

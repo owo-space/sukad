@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
-	panel "github.com/missuo/sukad/api/sukashi"
-	"github.com/missuo/sukad/common/task"
-	vCore "github.com/missuo/sukad/core"
+	panel "github.com/owo-space/sukad/api/sukashi"
+	"github.com/owo-space/sukad/common/task"
+	vCore "github.com/owo-space/sukad/core"
 	log "github.com/sirupsen/logrus"
 )
 

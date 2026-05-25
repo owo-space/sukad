@@ -267,13 +267,13 @@ install_sukad() {
     cd /usr/local/sukad/
 
     if  [[ -z "$version_param" ]] ; then
-        last_version=$(curl -Ls "https://api.github.com/repos/missuo/sukad/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "https://api.github.com/repos/owo-space/sukad/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}检测 sukad 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 sukad 版本安装${plain}"
             exit 1
         fi
         echo -e "${green}检测到最新版本：${last_version}，开始安装...${plain}"
-        url="https://github.com/missuo/sukad/releases/download/${last_version}/sukad-linux-${arch}.zip"
+        url="https://github.com/owo-space/sukad/releases/download/${last_version}/sukad-linux-${arch}.zip"
         curl -sL "$url" | pv -s 30M -W -N "下载进度" > /usr/local/sukad/sukad-linux.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 sukad 失败，请确保你的服务器能够下载 Github 的文件${plain}"
@@ -281,7 +281,7 @@ install_sukad() {
         fi
     else
     last_version=$version_param
-        url="https://github.com/missuo/sukad/releases/download/${last_version}/sukad-linux-${arch}.zip"
+        url="https://github.com/owo-space/sukad/releases/download/${last_version}/sukad-linux-${arch}.zip"
         curl -sL "$url" | pv -s 30M -W -N "下载进度" > /usr/local/sukad/sukad-linux.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 sukad $1 失败，请确保此版本存在${plain}"
@@ -375,7 +375,7 @@ EOF
     fi
 
 
-    curl -o /usr/bin/sukad -Ls https://raw.githubusercontent.com/missuo/sukad/main/script/sukad.sh
+    curl -o /usr/bin/sukad -Ls https://raw.githubusercontent.com/owo-space/sukad/main/script/sukad.sh
     chmod +x /usr/bin/sukad
 
     cd $cur_dir

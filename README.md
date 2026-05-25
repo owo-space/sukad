@@ -9,14 +9,14 @@ Sukashi 节点服务端，支持 Xray 系协议和原生 mieru。
 ### 一键安装
 
 ```
-wget -N https://raw.githubusercontent.com/missuo/sukad/main/script/install.sh && bash install.sh
+wget -N https://raw.githubusercontent.com/owo-space/sukad/main/script/install.sh && bash install.sh
 ```
 
 ## 构建
 ``` bash
-GOEXPERIMENT=jsonv2 go build -v -o build_assets/sukad -trimpath -ldflags "-X 'github.com/missuo/sukad/cmd.version=$version' -s -w -buildid="
+GOEXPERIMENT=jsonv2 go build -v -o build_assets/sukad -trimpath -ldflags "-X 'github.com/owo-space/sukad/cmd.version=$version' -s -w -buildid="
 ```
 
 ## Stars 增长记录
 
-[![Stargazers over time](https://starchart.cc/missuo/sukad.svg?variant=adaptive)](https://starchart.cc/missuo/sukad)
+[![Stargazers over time](https://starchart.cc/owo-space/sukad.svg?variant=adaptive)](https://starchart.cc/owo-space/sukad)

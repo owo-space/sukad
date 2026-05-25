@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/missuo/sukad/common/counter"
-	"github.com/missuo/sukad/common/rate"
-	"github.com/missuo/sukad/limiter"
+	"github.com/owo-space/sukad/common/counter"
+	"github.com/owo-space/sukad/common/rate"
+	"github.com/owo-space/sukad/limiter"
 
 	"github.com/xtls/xray-core/app/dispatcher"
 	"github.com/xtls/xray-core/common"

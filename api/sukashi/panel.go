@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/missuo/sukad/conf"
+	"github.com/owo-space/sukad/conf"
 )
 
 // Client talks to the Sukashi panel API.

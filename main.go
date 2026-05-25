@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/missuo/sukad/cmd"
+	"github.com/owo-space/sukad/cmd"
 )
 
 func main() {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	panel "github.com/missuo/sukad/api/sukashi"
+	panel "github.com/owo-space/sukad/api/sukashi"
 	log "github.com/sirupsen/logrus"
 )
 

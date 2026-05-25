@@ -5,7 +5,7 @@ import (
 	"net"
 	"strings"
 
-	panel "github.com/missuo/sukad/api/sukashi"
+	panel "github.com/owo-space/sukad/api/sukashi"
 	"github.com/xtls/xray-core/app/dns"
 	"github.com/xtls/xray-core/app/router"
 	xnet "github.com/xtls/xray-core/common/net"

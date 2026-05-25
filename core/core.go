@@ -3,10 +3,10 @@ package core
 import (
 	"sync"
 
-	panel "github.com/missuo/sukad/api/sukashi"
-	"github.com/missuo/sukad/conf"
-	"github.com/missuo/sukad/core/app/dispatcher"
-	_ "github.com/missuo/sukad/core/distro/all"
+	panel "github.com/owo-space/sukad/api/sukashi"
+	"github.com/owo-space/sukad/conf"
+	"github.com/owo-space/sukad/core/app/dispatcher"
+	_ "github.com/owo-space/sukad/core/distro/all"
 	log "github.com/sirupsen/logrus"
 	"github.com/xtls/xray-core/app/proxyman"
 	"github.com/xtls/xray-core/app/stats"

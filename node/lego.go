@@ -22,8 +22,8 @@ import (
 
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/lego"
-	panel "github.com/missuo/sukad/api/sukashi"
-	"github.com/missuo/sukad/common/file"
+	panel "github.com/owo-space/sukad/api/sukashi"
+	"github.com/owo-space/sukad/common/file"
 )
 
 type Lego struct {

@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	panel "github.com/missuo/sukad/api/sukashi"
-	"github.com/missuo/sukad/common/task"
-	"github.com/missuo/sukad/conf"
-	"github.com/missuo/sukad/core"
-	"github.com/missuo/sukad/limiter"
+	panel "github.com/owo-space/sukad/api/sukashi"
+	"github.com/owo-space/sukad/common/task"
+	"github.com/owo-space/sukad/conf"
+	"github.com/owo-space/sukad/core"
+	"github.com/owo-space/sukad/limiter"
 	log "github.com/sirupsen/logrus"
 )
 

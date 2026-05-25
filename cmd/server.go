@@ -9,10 +9,10 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/missuo/sukad/conf"
-	"github.com/missuo/sukad/core"
-	"github.com/missuo/sukad/limiter"
-	"github.com/missuo/sukad/node"
+	"github.com/owo-space/sukad/conf"
+	"github.com/owo-space/sukad/core"
+	"github.com/owo-space/sukad/limiter"
+	"github.com/owo-space/sukad/node"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
