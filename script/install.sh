@@ -293,8 +293,6 @@ install_sukad() {
     rm sukad-linux.zip -f
     chmod +x sukad
     mkdir /etc/sukad/ -p
-    cp geoip.dat /etc/sukad/
-    cp geosite.dat /etc/sukad/
     if [[ x"${release}" == x"alpine" ]]; then
         rm /etc/init.d/sukad -f
         cat <<EOF > /etc/init.d/sukad

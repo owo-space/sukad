@@ -1,3 +1,15 @@
+# Build artifacts (release binaries belong only in GitHub Releases, never the
+# repo — they balloon clone size and trigger >50MB warnings).
+/build_assets/sukad
+/build_assets/sukad-*
+/build_assets/sukad.exe
+/build_assets/sukad_softfloat*
+/sukad
+/sukad.exe
+
+# OS / editor cruft
+.DS_Store
+
 example/config.yml
 example/main
 example/XrayR
