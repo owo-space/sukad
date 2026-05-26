@@ -32,6 +32,7 @@ type Core struct {
 	Server     *core.Instance
 	users      *UserMap
 	mieruNodes map[string]*mieruNode
+	snellNodes map[string]*snellNode
 	ihm        inbound.Manager
 	ohm        outbound.Manager
 	dispatcher *dispatcher.DefaultDispatcher
@@ -45,6 +46,7 @@ type UserMap struct {
 func New(config *conf.Conf) *Core {
 	core := &Core{
 		mieruNodes: make(map[string]*mieruNode),
+		snellNodes: make(map[string]*snellNode),
 		Config:     config,
 		users: &UserMap{
 			uidMap: make(map[string]int),
@@ -78,6 +80,12 @@ func (v *Core) Close() error {
 			return err
 		}
 		delete(v.mieruNodes, tag)
+	}
+	for tag, node := range v.snellNodes {
+		if err := node.close(); err != nil {
+			return err
+		}
+		delete(v.snellNodes, tag)
 	}
 	if v.Server != nil {
 		err := v.Server.Close()

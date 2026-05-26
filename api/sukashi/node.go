@@ -57,6 +57,8 @@ type CommonNode struct {
 	PaddingScheme []string `json:"padding_scheme,omitempty"`
 	//mieru
 	MieruSettings MieruSettings `json:"mieru_settings"`
+	//snell (OpenSnell server, Surge-compatible)
+	SnellSettings SnellSettings `json:"snell_settings"`
 	//hysteria hysteria2
 	UpMbps                  int    `json:"up_mbps"`
 	DownMbps                int    `json:"down_mbps"`
@@ -77,6 +79,54 @@ type MieruPortBinding struct {
 	PortRange    string `json:"port_range"`
 	PortRangeAlt string `json:"portRange"`
 	Protocol     string `json:"protocol"`
+}
+
+// SnellSettings are the per-node knobs for an OpenSnell server.
+//
+// PSK is intentionally absent — under V2Node, each user's UUID is its
+// own PSK (mirroring how the mieru integration treats UUIDs). The
+// settings here are the server-wide transport-level options Surge
+// clients honor (obfs, ipv6, etc.) plus the OpenSnell-specific extras
+// (TFO, QUIC mode, brutal congestion control).
+//
+// Field defaults applied by the node when zero-valued:
+//   - Obfs: "off"  (Surge default)
+//   - IPv6: true   (Surge default — outbound A+AAAA both allowed)
+//   - UDP:  true   (snell datagram protocol over TCP)
+//   - QUIC: true   (HTTP/3 proxy on the same UDP port)
+//   - TFO:  true   (V2Node default; saves 1 RTT per fresh connection)
+type SnellSettings struct {
+	// Obfs picks the snell obfuscation layer: "off" / "http" / "tls".
+	// Empty string is treated as "off".
+	Obfs string `json:"obfs"`
+
+	// IPv6 toggles whether outbound dials may use AAAA / IPv6 paths.
+	// Pointer so the panel can distinguish "set to false" from "not
+	// configured" — the V2Node default is true.
+	IPv6 *bool `json:"ipv6,omitempty"`
+
+	// UDP toggles snell's UDP-over-TCP datagram protocol. Required for
+	// Surge clients to relay UDP through the proxy. Default true.
+	UDP *bool `json:"udp,omitempty"`
+
+	// QUIC toggles snell v5's QUIC proxy mode (UDP on the same port,
+	// envelope-wrapped initial packet). Required for Surge HTTP/3
+	// traffic to be proxied. Default true.
+	QUIC *bool `json:"quic,omitempty"`
+
+	// TFO toggles TCP Fast Open on the snell server (Linux only —
+	// no-op elsewhere). Default true; the kernel needs
+	// /proc/sys/net/ipv4/tcp_fastopen >= 2 for it to take effect.
+	TFO *bool `json:"tfo,omitempty"`
+
+	// EgressInterface, when non-empty, pins outbound sockets to a
+	// specific local interface (SO_BINDTODEVICE / IP_BOUND_IF).
+	EgressInterface string `json:"egress_interface"`
+
+	// DNS overrides the host resolver for outbound hostname lookups.
+	// Each entry is an "ip[:port]" string; tried in order on each
+	// query. Empty falls back to /etc/resolv.conf.
+	DNS []string `json:"dns"`
 }
 
 type Route struct {
@@ -177,7 +227,7 @@ func (c *Client) GetNodeInfo(ctx context.Context) (node *NodeInfo, err error) {
 	case "vmess", "trojan", "hysteria2", "tuic", "anytls", "vless":
 		node.Type = cm.Protocol
 		node.Security = cm.Tls
-	case "shadowsocks", "mieru":
+	case "shadowsocks", "mieru", "snell":
 		node.Type = cm.Protocol
 		node.Security = 0
 	default:

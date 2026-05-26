@@ -8,6 +8,7 @@ require (
 	github.com/go-acme/lego/v4 v4.25.2
 	github.com/go-resty/resty/v2 v2.16.5
 	github.com/juju/ratelimit v1.0.2
+	github.com/missuo/opensnell v0.0.0-20260526025913-aaabe0a7b818
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
@@ -166,7 +167,7 @@ require (
 	github.com/sacloud/iaas-api-go v1.16.1 // indirect
 	github.com/sacloud/packages-go v0.0.11 // indirect
 	github.com/sagernet/quic-go v0.59.0-sing-box-mod.2 // indirect
-	github.com/sagernet/sing v0.8.9 // indirect
+	github.com/sagernet/sing v0.8.10 // indirect
 	github.com/sagernet/sing-quic v0.6.1 // indirect
 	github.com/sagernet/sing-shadowsocks v0.2.7 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
@@ -226,7 +227,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516 // indirect
 	google.golang.org/grpc v1.80.0 // indirect
-	gopkg.in/ini.v1 v1.67.0 // indirect
+	gopkg.in/ini.v1 v1.67.2 // indirect
 	gopkg.in/ns1/ns1-go.v2 v2.14.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

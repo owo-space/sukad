@@ -48,6 +48,10 @@ func (vc *Core) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo) 
 		vc.access.Unlock()
 		return node.delUsers(users)
 	}
+	if node, ok := vc.snellNodes[tag]; ok {
+		vc.access.Unlock()
+		return node.delUsers(users)
+	}
 	vc.access.Unlock()
 	userManager, err := vc.GetUserManager(tag)
 	if err != nil {
@@ -81,6 +85,14 @@ func (vc *Core) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo) 
 func (vc *Core) GetUserTrafficSlice(tag string, mintraffic int) ([]panel.UserTraffic, error) {
 	vc.access.Lock()
 	if node, ok := vc.mieruNodes[tag]; ok {
+		vc.access.Unlock()
+		trafficSlice := node.getUserTrafficSlice(mintraffic)
+		if len(trafficSlice) == 0 {
+			return nil, nil
+		}
+		return trafficSlice, nil
+	}
+	if node, ok := vc.snellNodes[tag]; ok {
 		vc.access.Unlock()
 		trafficSlice := node.getUserTrafficSlice(mintraffic)
 		if len(trafficSlice) == 0 {
@@ -125,6 +137,10 @@ func (vc *Core) GetUserTrafficSlice(tag string, mintraffic int) ([]panel.UserTra
 func (v *Core) AddUsers(p *AddUsersParams) (added int, err error) {
 	v.access.Lock()
 	if node, ok := v.mieruNodes[p.Tag]; ok {
+		v.access.Unlock()
+		return node.addUsers(p.Users)
+	}
+	if node, ok := v.snellNodes[p.Tag]; ok {
 		v.access.Unlock()
 		return node.addUsers(p.Users)
 	}
