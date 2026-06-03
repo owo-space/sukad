@@ -1,14 +1,30 @@
 # sukad
 
-Sukashi node daemon with Xray-family protocol and native mieru support.
+Sukashi node daemon with Xray-family protocols plus native Mieru and Snell support.
 
 > **Note:** This daemon must be paired with the [Sukashi](https://github.com/owo-space/sukashi) panel.
 
 ## Overview
 
 `sukad` runs on each proxy node, pulls its configuration from the Sukashi
-panel, serves user traffic over the Xray-family protocols and native mieru,
-and reports traffic/online stats back to the panel.
+panel, serves user traffic, and reports traffic/online stats back to the panel.
+
+## Supported protocols
+
+Xray-family (served via the embedded Xray core):
+
+- Shadowsocks
+- VLESS
+- VMess
+- Trojan
+- Hysteria2
+- TUIC
+- AnyTLS
+
+Native (standalone implementations):
+
+- Mieru
+- Snell
 
 ## Installation
 
@@ -43,7 +59,3 @@ A `Dockerfile` is also provided for container builds.
 ## License
 
 See [LICENSE](./LICENSE).
-
-## Star history
-
-[![Stargazers over time](https://starchart.cc/owo-space/sukad.svg?variant=adaptive)](https://starchart.cc/owo-space/sukad)
